@@ -4,7 +4,7 @@ import pickle
 import os
 
 # for developers only -- shows a console version of the game used for debugging things
-SHOW_DEBUG = True
+SHOW_DEBUG = False
 
 
 # class for individual cards containing the card's
@@ -14,6 +14,8 @@ class Card:
         self.suit = suit
         self.rank = rank
         self.count = count
+        self.ace_value = 1
+        self.ace_set = False
 
     def get_card(self):
         return self.suit + self.rank
@@ -27,6 +29,17 @@ class Card:
     def get_count(self):
         return self.count
 
+    def set_ace_value(self, value):
+        self.ace_value = value
+
+    def get_ace_value(self):
+        return self.ace_value
+
+    def get_ace_set(self):
+        return self.ace_set
+
+    def set_ace_set(self):
+        self.ace_set = True
 
 # class for hands used in keeping track of dealer and player's
 # set of cards
@@ -55,20 +68,18 @@ class Hand:
     def get_cards(self):
         return self.cards
 
-    # TODO fix ace bug
     def get_value(self):
         value = 0
-        contains_ace = False
-
         for card in self.cards:
             rank = card.get_rank()
             value += self.values[rank]
 
             if rank == 'A':
-                contains_ace = True
-
-        if value < 11 and contains_ace:
-            value += 10
+                value -= 1
+                if value < 11 and not card.get_ace_set():
+                    card.set_ace_value(11)
+                    card.set_ace_set()
+                value += card.get_ace_value()
 
         return value
 
@@ -120,20 +131,30 @@ class Blackjack:
 
         self.player_score = 0
         self.dealer_score = 0
-        self.scoresFile = "scores.data"
+        self.scores_file = "scores.data"
 
-        if os.path.getsize(self.scoresFile) > 0:
-            scorePickle = open(self.scoresFile, 'rb')
-            savedScores = pickle.load(scorePickle)
-            self.dealer_score = savedScores[0]
-            self.player_score = savedScores[1]
-
+        if os.path.getsize(self.scores_file) > 0:
+            score_pickle = open(self.scores_file, 'rb')
+            saved_scores = pickle.load(score_pickle)
+            self.dealer_score = saved_scores[0]
+            self.player_score = saved_scores[1]
 
         self.player_card_hit_count = 1
         self.dealer_card_hit_count = 1
 
         self.window = Tk()
         self.window.title("Blackjack")
+
+        # create menu bar
+        menubar = Menu(self.window)
+        self.window.config(menu = menubar)  # set windows Menu to menubar
+
+        # create pulldown
+        option_menu = Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Options", menu = option_menu)
+        option_menu.add_command(label="Clear Scores", command = self.clear_scores)
+        option_menu.add_separator()
+        option_menu.add_cascade(label="Quit", command = self.window.quit)
 
         self.frame = Frame(self.window)
         self.frame.pack()
@@ -192,7 +213,6 @@ class Blackjack:
     # function to clear the cards from the canvas
     # and reset label text
     def clear(self):
-
         self.dealer_status["text"] = ""
         self.player_status["text"] = ""
          
@@ -210,6 +230,16 @@ class Blackjack:
 
         self.player_card_hit_count = 1
         self.dealer_card_hit_count = 1
+
+    def clear_scores(self):
+        self.dealer_score_label["text"] = "Dealer score: 0"
+        self.player_score_label["text"] = "Player score: 0"
+        self.dealer_score = 0
+        self.player_score = 0
+        scores_to_save = [0, 0]
+        score_pickle = open(self.scores_file, "wb")
+        pickle.dump(scores_to_save, score_pickle)
+        score_pickle.close()
 
     # function for deal button which resets UI elements and creates a new
     # deck for the dealer and player
@@ -275,7 +305,7 @@ class Blackjack:
             self.game_status["fg"] = "red"
             self.game_status["text"] = "ERROR: Please deal a new deck to continue!"
             if SHOW_DEBUG:
-                print("ERROR: Please deal a new deck to continue!")
+                print("\nERROR: Please deal a new deck to continue!")
 
     def update_values(self):
         self.dealer_status["text"] = "Dealer total: " + str(self.dealer_hand.get_value())
@@ -290,10 +320,11 @@ class Blackjack:
         self.dealer_score_label["text"] = "Dealer score: %s" % self.dealer_score
         self.player_score_label["text"] = "Player score: %s" % self.player_score
 
-        scoresToSave = [self.dealer_score, self.player_score]
-        scorePickle = open(self.scoresFile, "wb")
-        pickle.dump(scoresToSave, scorePickle)
-        scorePickle.close()
+        # save dealer / player scores in scores.data file
+        scores_to_save = [self.dealer_score, self.player_score]
+        score_pickle = open(self.scores_file, "wb")
+        pickle.dump(scores_to_save, score_pickle)
+        score_pickle.close()
 
         if SHOW_DEBUG:
             print("\n%s" % text)
@@ -334,7 +365,7 @@ class Blackjack:
             self.game_status["fg"] = "red"
             self.game_status["text"] = "ERROR: Please deal a new deck to continue!"
             if SHOW_DEBUG:
-                print("ERROR: Please deal a new deck to continue!")
+                print("\nERROR: Please deal a new deck to continue!")
 
 
 
