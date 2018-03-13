@@ -29,8 +29,6 @@ class Card:
     def get_count(self):
         return self.count
 
-    # ace classes are used in keeping track if an ace
-    # has automatically added 1 or 11 to the player's hand
     def set_ace_value(self, value):
         self.ace_value = value
 
@@ -54,12 +52,11 @@ class Hand:
                        'Q': 10, 'K': 10}
         self.cards = []
 
-    # return array of current cards in hand
+    # function to get the current cards in the hand
     def get_hand(self):
         current_hand = ""
         for card in self.cards:
             current_hand += card.get_card()
-            # add a comma between cards before the last card
             if card != self.cards[-1]:
                 current_hand += ", "
 
@@ -69,20 +66,17 @@ class Hand:
     def add_card(self, card):
         self.cards.append(card)
 
+    def get_cards(self):
+        return self.cards
+
     def get_value(self):
         value = 0
         for card in self.cards:
-            # loop through each card and find the card's value by
-            # plugging in the card's rank into the self.values array
             rank = card.get_rank()
             value += self.values[rank]
 
-            # if the card is an ace then subtract one from value total
             if rank == 'A':
                 value -= 1
-                # if the ace has not been added before and the value
-                # is less than 11 then add 11 to total, otherwise
-                # add 1 back
                 if value < 11 and not card.get_ace_set():
                     card.set_ace_value(11)
                     card.set_ace_set()
@@ -140,18 +134,6 @@ class Blackjack:
         self.dealer_score = 0
         self.scores_file = "scores.data"
 
-        # used in determining if it is safe to clear the games GUI elements
-        # will become true after first time dealing cards
-        self.safe_to_clear = False
-
-        # check if scores file exists and if not then
-        # create a new one
-        if not os.path.exists("scores.data"):
-            with open("scores.data", 'w'): pass
-
-
-        # find the previous scores from the scores.data file
-        # and assign them to the dealer / player score
         if os.path.getsize(self.scores_file) > 0:
             score_pickle = open(self.scores_file, 'rb')
             saved_scores = pickle.load(score_pickle)
@@ -164,26 +146,29 @@ class Blackjack:
         self.window = Tk()
         self.window.title("Blackjack")
 
-        # menubar containing the options
+        # create menu bar
         menubar = Menu(self.window)
-        self.window.config(menu = menubar)  # set windows Menu to menubar
-        option_menu = Menu(menubar, tearoff = 0)
-        menubar.add_cascade(label="Options", menu = option_menu)
-        option_menu.add_command(label="Clear Scores", command = self.clear_scores)
+        self.window.config(menu=menubar)  # set windows Menu to menubar
+
+        # create pulldown
+        option_menu = Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Options", menu=option_menu)
+        option_menu.add_command(label="Clear Scores", command=self.clear_scores)
         option_menu.add_separator()
-        option_menu.add_cascade(label="Quit", command = self.window.quit)
+        option_menu.add_cascade(label="Quit", command=self.window.quit)
 
-        # frame for the player's input buttons
-        self.button_frame = Frame(self.window)
-        self.button_frame.pack()
+        self.frame = Frame(self.window)
+        self.frame.pack()
+        self.safe_to_clear = False
 
-        bt_deal = Button(self.button_frame, width = 20, height = 10, text="Deal", command = self.deal)
-        bt_hit = Button(self.button_frame, width = 20, height = 10, text="Hit", command = self.hit)
-        bt_stand = Button(self.button_frame, width = 20, height = 10, text="Stand", command = self.stand)
 
-        bt_deal.grid(row = 1, column = 1, pady = 10)
-        bt_hit.grid(row = 1, column = 2, pady = 10)
-        bt_stand.grid(row = 1, column = 3, pady = 10)
+        bt_deal = Button(self.frame, width=20, height=10, text="Deal", command=self.deal)
+        bt_hit = Button(self.frame, width=20, height=10, text="Hit", command=self.hit)
+        bt_stand = Button(self.frame, width=20, height=10, text="Stand", command=self.stand)
+
+        bt_deal.grid(row=1, column=1, pady=10)
+        bt_hit.grid(row=1, column=2, pady=10)
+        bt_stand.grid(row=1, column=3, pady=10)
 
         self.dealer_frame = Frame(self.window)
         self.dealer_frame.pack()
@@ -203,20 +188,19 @@ class Blackjack:
 
         # frame for dealer / player status
         self.status_frame = Frame(self.window)
-        self.status_frame.pack(side = LEFT)
+        self.status_frame.pack(side=LEFT)
 
         # dealer status GUI
-        self.dealer_status = Label(self.status_frame, text = "")
+        self.dealer_status = Label(self.status_frame, text="")
         self.dealer_status.pack()
 
         # player status GUI
-        self.player_status = Label(self.status_frame, text = "")
+        self.player_status = Label(self.status_frame, text="")
         self.player_status.pack()
 
         # frame for dealer / player score
         self.score_frame = Frame(self.window)
-        self.score_frame.pack(side = RIGHT)
-
+        self.score_frame.pack(side=RIGHT)
 
         # dealer score GUI
         self.dealer_score_label = Label(self.score_frame, text="Dealer score: %d" % self.dealer_score)
@@ -233,13 +217,13 @@ class Blackjack:
     def clear(self):
         self.dealer_status["text"] = ""
         self.player_status["text"] = ""
-         
+
         self.player_image_list.clear()
         for i in range(0, len(self.player_hand.cards)):
             self.player_label_list[i].grid_forget()
             self.player_label_list[i].destroy()
-
         self.player_label_list.clear()
+
         self.dealer_image_list.clear()
         for i in range(0, len(self.dealer_hand.cards)):
             self.dealer_label_list[i].grid_forget()
@@ -249,9 +233,6 @@ class Blackjack:
         self.player_card_hit_count = 1
         self.dealer_card_hit_count = 1
 
-    # function for the clear scores option in the menubar
-    # resets the dealer / player labels and scores
-    # and resets the scores in scores.data
     def clear_scores(self):
         self.dealer_score_label["text"] = "Dealer score: 0"
         self.player_score_label["text"] = "Player score: 0"
@@ -293,13 +274,13 @@ class Blackjack:
             self.dealer_image_list.append(PhotoImage(file="cards/" +
                                                           str(self.dealer_hand.cards[i].get_count()) + ".gif"))
             self.dealer_label_list.append(Label(self.dealer_frame, image=self.dealer_image_list[i]))
-            self.dealer_label_list[i].pack(side = LEFT)
+            self.dealer_label_list[i].pack(side=LEFT)
 
         for i in range(len(self.player_hand.cards)):
             self.player_image_list.append(PhotoImage(file="cards/" +
                                                           str(self.player_hand.cards[i].get_count()) + ".gif"))
-            self.player_label_list.append(Label(self.player_frame, image = self.player_image_list[i]))
-            self.player_label_list[i].pack(side = LEFT)
+            self.player_label_list.append(Label(self.player_frame, image=self.player_image_list[i]))
+            self.player_label_list[i].pack(side=LEFT)
 
         self.update_values()
 
@@ -307,15 +288,15 @@ class Blackjack:
 
     def hit(self):
         if self.in_game:
-            # add a card as long as player is below 21
             if self.player_hand.get_value() <= 21:
                 self.player_hand.add_card(self.deck.deal_card())
 
             self.player_card_hit_count += 1
             self.player_image_list.append(PhotoImage(file="cards/" + str(
                 self.player_hand.cards[self.player_card_hit_count].get_count()) + ".gif"))
-            self.player_label_list.append(Label(self.player_frame, image = self.player_image_list[self.player_card_hit_count]))
-            self.player_label_list[self.player_card_hit_count].pack(side= LEFT)
+            self.player_label_list.append(
+                Label(self.player_frame, image=self.player_image_list[self.player_card_hit_count]))
+            self.player_label_list[self.player_card_hit_count].pack(side=LEFT)
 
             self.update_values()
 
@@ -358,10 +339,13 @@ class Blackjack:
                 self.dealer_hand.add_card(self.deck.deal_card())
                 self.dealer_card_hit_count += 1
 
+                print(self.dealer_hand.cards[self.dealer_card_hit_count].get_count())
                 self.dealer_image_list.append(
-                    PhotoImage(file="cards/" + str(self.dealer_hand.cards[self.dealer_card_hit_count].get_count()) + ".gif"))
+                    PhotoImage(
+                        file="cards/" + str(self.dealer_hand.cards[self.dealer_card_hit_count].get_count()) + ".gif"))
 
-                self.dealer_label_list.append(Label(self.dealer_frame, image=self.dealer_image_list[self.dealer_card_hit_count]))
+                self.dealer_label_list.append(
+                    Label(self.dealer_frame, image=self.dealer_image_list[self.dealer_card_hit_count]))
                 self.dealer_label_list[self.dealer_card_hit_count].pack(side=LEFT)
 
             self.update_values()
@@ -389,6 +373,4 @@ class Blackjack:
                 print("\nERROR: Please deal a new deck to continue!")
 
 
-
 Blackjack().deal()
-
