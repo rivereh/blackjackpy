@@ -190,10 +190,7 @@ class Blackjack:
         # create pull-down for options with Rules, Clear Scores, and Quit
         option_menu = Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Options", menu=option_menu)
-<<<<<<< HEAD
         option_menu.add_command(label="Blackjack Rules", command=self.show_rules)
-=======
->>>>>>> c5184910608ac7d5cef357ea895f9b55695b8cad
         option_menu.add_command(label="Clear Scores", command=self.clear_scores)
         option_menu.add_separator()
         option_menu.add_cascade(label="Quit", command=self.window.quit)
@@ -202,7 +199,6 @@ class Blackjack:
         self.button_frame = Frame(self.window)
         self.button_frame.pack()
 
-<<<<<<< HEAD
         bt_deal = Button(self.button_frame, width = 20, height = 10, text = "Deal", command = self.deal)
         bt_hit = Button(self.button_frame, width = 20, height = 10, text = "Hit", command = self.hit)
         bt_stand = Button(self.button_frame, width = 20, height = 10, text = "Stand", command = self.stand)
@@ -211,16 +207,6 @@ class Blackjack:
         bt_deal.grid(row = 1, column = 1, pady = 10)
         bt_hit.grid(row = 1, column = 2, pady = 10)
         bt_stand.grid(row = 1, column = 3, pady = 10)
-=======
-
-        bt_deal = Button(self.frame, width=20, height=10, text="Deal", command=self.deal)
-        bt_hit = Button(self.frame, width=20, height=10, text="Hit", command=self.hit)
-        bt_stand = Button(self.frame, width=20, height=10, text="Stand", command=self.stand)
-
-        bt_deal.grid(row=1, column=1, pady=10)
-        bt_hit.grid(row=1, column=2, pady=10)
-        bt_stand.grid(row=1, column=3, pady=10)
->>>>>>> c5184910608ac7d5cef357ea895f9b55695b8cad
 
         # frame for the dealer and players cards and the label 
         # and image lists, used in holding which cards should be
@@ -241,14 +227,14 @@ class Blackjack:
 
         # frame for dealer / player status
         self.status_frame = Frame(self.window)
-        self.status_frame.pack(side=LEFT)
+        self.status_frame.pack(side = LEFT)
 
         # dealer status GUI
-        self.dealer_status = Label(self.status_frame, text="")
+        self.dealer_status = Label(self.status_frame, text = "")
         self.dealer_status.pack()
 
         # player status GUI
-        self.player_status = Label(self.status_frame, text="")
+        self.player_status = Label(self.status_frame, text = "")
         self.player_status.pack()
 
         # frame for dealer / player score
@@ -294,14 +280,11 @@ class Blackjack:
         self.dealer_status["text"] = ""
         self.player_status["text"] = ""
 
-<<<<<<< HEAD
         # clears the player and dealers image/label list
         # and goes through each element in the label list and
         # forgets it's grid position and destroys it, otherwise
         # problems with the UI will happen when the player deals
         # a new deck
-=======
->>>>>>> c5184910608ac7d5cef357ea895f9b55695b8cad
         self.player_image_list.clear()
         for i in range(0, len(self.player_hand.cards)):
             self.player_label_list[i].grid_forget()
@@ -397,11 +380,7 @@ class Blackjack:
                 self.player_hand.cards[self.player_card_hit_count].get_count()) + ".gif"))
             self.player_label_list.append(
                 Label(self.player_frame, image=self.player_image_list[self.player_card_hit_count]))
-<<<<<<< HEAD
             self.player_label_list[self.player_card_hit_count].pack(side = LEFT)
-=======
-            self.player_label_list[self.player_card_hit_count].pack(side=LEFT)
->>>>>>> c5184910608ac7d5cef357ea895f9b55695b8cad
 
             # update the score UI for the dealer and player
             self.update_values()
@@ -493,8 +472,5 @@ class Blackjack:
                 print("\nERROR: Please deal a new deck to continue!")
 
 
-<<<<<<< HEAD
 # start the game
-=======
->>>>>>> c5184910608ac7d5cef357ea895f9b55695b8cad
 Blackjack().deal()
