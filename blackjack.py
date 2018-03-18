@@ -1,7 +1,7 @@
 """
     CS121 W18
     BLACKJACK
-    RIVER, ARON, JIN
+    RIVER, ARON
     3/13/18
     PYTHON 3.6.4
 """
