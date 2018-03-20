@@ -96,7 +96,7 @@ class Hand:
             value += self.values[rank]
 
             # check if the card is an ace, if so and if the player is under 11 in score and
-            # the current card has not been checked before than add 11 to the value
+            # the current card has not been checked before then add 11 to the value
             # otherwise add 1
             if rank == 'A':
                 value -= 1
@@ -370,7 +370,7 @@ class Blackjack:
     # if the game is currently active then hit
     def hit(self):
         if self.in_game:
-            # if the player is under 21 than add a new card to their hand
+            # if the player is under 21 then add a new card to their hand
             if self.player_hand.get_value() <= 21:
                 self.player_hand.add_card(self.deck.deal_card())
 
@@ -390,7 +390,7 @@ class Blackjack:
                 self.dealer_score += 1
                 self.update_game_status("red", "Player busted, dealer wins!")
                 self.in_game = False
-        # if the game is not in play than prompt the user to deal a new deck to play
+        # if the game is not in play then prompt the user to deal a new deck to play
         else:
             self.game_status["fg"] = "red"
             self.game_status["text"] = "ERROR: Please deal a new deck to continue!"
@@ -425,7 +425,7 @@ class Blackjack:
     # if the game is active then update the dealers hand and compare scores
     def stand(self):
         if self.in_game:
-            # if the dealers value is under 17 than add a new card to their hand
+            # if the dealers value is under 17 then add a new card to their hand
             while self.dealer_hand.get_value() < 17:
                 self.dealer_hand.add_card(self.deck.deal_card())
                 # add one to the dealers card hit count, used in determining what card needs
@@ -450,13 +450,13 @@ class Blackjack:
                 self.update_game_status("green", "Dealer busted, Player wins!")
                 self.in_game = False
             else:
-                # if both dealer and player have equal scores than it's a tie
+                # if both dealer and player have an equal scores then it's a tie
                 if self.dealer_hand.get_value() == self.player_hand.get_value():
                     self.dealer_score += 1
                     self.player_score += 1
                     self.update_game_status("black", "Tie!")
                     self.in_game = False
-                # if the dealer has a score close to 21 than the player than the dealer wins
+                # the dealer wins if they have a score close to 21
                 elif self.dealer_hand.get_value() >= self.player_hand.get_value() or self.player_hand.get_value() > 21:
                     self.dealer_score += 1
                     self.update_game_status("red", "Dealer wins!")
@@ -464,7 +464,7 @@ class Blackjack:
                 else:
                     self.player_score += 1
                     self.update_game_status("green", "Player wins!")
-        # if the game is not in play than alert the player to deal a new deck to play
+        # if the game is not in play then alert the player to deal a new deck to play
         else:
             self.game_status["fg"] = "red"
             self.game_status["text"] = "ERROR: Please deal a new deck to continue!"
