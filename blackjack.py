@@ -474,3 +474,4 @@ class Blackjack:
 
 # start the game
 Blackjack().deal()
+
