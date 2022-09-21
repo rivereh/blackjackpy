@@ -1,5 +1,5 @@
 # blackjackpy
-Implementation of Blackjack in Python using Tkinter for CS121 final project, created by River                            
+Implementation of Blackjack in Python using Tkinter for CS121 final projecte                         
 
 **NOTE:** Game will not work unless the cards folder is in the same directory as blackjack.py
 
